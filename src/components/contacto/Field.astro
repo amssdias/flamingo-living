@@ -1,0 +1,45 @@
+---
+interface Props {
+  name: string;
+  label: string;
+  hint?: string;
+  /** Span the full width of the form grid. */
+  full?: boolean;
+}
+
+const { name, label, hint, full = false } = Astro.props;
+---
+
+<label class:list={['field', { 'field--full': full }]}>
+  <span class="field__label">{label}</span>
+  <slot />
+  {hint && <span class="field__hint" id={`${name}-hint`}>{hint}</span>}
+  <span class="field__error" id={`${name}-error`} data-error-for={name} hidden></span>
+</label>
+
+<style>
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field--full {
+    grid-column: 1 / -1;
+  }
+
+  .field__label {
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  .field__hint {
+    font-size: var(--fs-xs);
+    color: var(--color-muted);
+  }
+
+  .field__error {
+    font-size: var(--fs-xs);
+    color: var(--color-error);
+  }
+</style>

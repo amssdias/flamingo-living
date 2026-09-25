@@ -1,0 +1,44 @@
+---
+import { photos } from '../../data/photos';
+import { leadHref } from '../../lib/lead';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import ImageHero from '../ui/ImageHero.astro';
+---
+
+<ImageHero photo={photos.heroCoast} height="full">
+  <h1 class="t-hero home-hero__title">Tu lugar en el Caribe comienza aquí</h1>
+  <p class="home-hero__lead">
+    Parcelas desde 230 m² en Falcón, Venezuela, para construir, invertir y vivir cerca del mar.
+  </p>
+  <div class="home-hero__actions">
+    <Button href="#descubrir" variant="light" size="lg">
+      Descubrir Ciudad Flamingo <Icon name="arrow-down" />
+    </Button>
+    <Button href={leadHref({ source: 'home-hero' })} variant="glass" size="lg">
+      Solicitar información
+    </Button>
+  </div>
+</ImageHero>
+
+<style>
+  .home-hero__title {
+    max-width: 13ch;
+  }
+
+  .home-hero__lead {
+    max-width: 46ch;
+    margin-top: 24px;
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+    color: var(--color-on-dark-muted);
+    text-wrap: pretty;
+  }
+
+  .home-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 36px;
+  }
+</style>

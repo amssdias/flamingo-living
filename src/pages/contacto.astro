@@ -1,0 +1,48 @@
+---
+import ContactChannels from '../components/contacto/ContactChannels.astro';
+import ContactForm from '../components/contacto/ContactForm.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Contacto"
+  description="Cuéntanos qué buscas y un asesor te enviará la información de Ciudad Flamingo que necesitas."
+>
+  <section class="container split contact" style="--split-min: 400px">
+    <div>
+      <h1 class="t-h1 contact__title" data-reveal>Hablemos de tu próxima inversión</h1>
+      <p class="t-lead contact__lead" data-reveal>
+        Cuéntanos qué buscas y un asesor te enviará la información de Ciudad Flamingo que necesitas.
+      </p>
+      <div class="contact__channels" data-reveal>
+        <ContactChannels />
+      </div>
+    </div>
+
+    <div data-reveal>
+      <ContactForm />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact {
+    align-items: start;
+    padding-top: clamp(56px, 8vw, 112px);
+    padding-bottom: clamp(88px, 10vw, 140px);
+  }
+
+  .contact__title {
+    max-width: 12ch;
+    font-size: clamp(2.625rem, 5vw, 4.5rem);
+  }
+
+  .contact__lead {
+    max-width: 44ch;
+    margin-top: 24px;
+  }
+
+  .contact__channels {
+    margin-top: 40px;
+  }
+</style>

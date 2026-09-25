@@ -1,0 +1,238 @@
+---
+import { plotSizeNotes, plotSizes } from '../../data/site';
+import { leadHref } from '../../lib/lead';
+import Button from '../ui/Button.astro';
+import Chip from '../ui/Chip.astro';
+
+const DEFAULT_SIZE = 280;
+const largest = Math.max(...plotSizes);
+// Largest first so smaller squares sit on top and stay clickable.
+const squares = [...plotSizes]
+  .sort((a, b) => b - a)
+  .map((size) => {
+    const pct = Math.sqrt(size / largest) * 100;
+    return { size, side: `${pct.toFixed(2)}%`, top: `${(100 - pct).toFixed(2)}%` };
+  });
+---
+
+<section id="parcelas" class="plot-picker" data-plot-picker>
+  <div class="container section split plot-picker__inner">
+    <div>
+      <h2 class="t-h2 plot-picker__title" data-reveal>Parcelas desde 230 m² hasta 320 m²</h2>
+      <p class="t-lead plot-picker__lead" data-reveal>
+        Cinco tamaños para cinco formas de construir. Elige uno y compáralo con el resto.
+      </p>
+
+      <div class="plot-picker__chips" role="group" aria-label="Tamaño de parcela" data-reveal>
+        {
+          plotSizes.map((size) => (
+            <Chip pressed={size === DEFAULT_SIZE} data-size={size}>
+              {size} m²
+            </Chip>
+          ))
+        }
+      </div>
+
+      <div class="plot-picker__readout" data-reveal aria-live="polite">
+        <p class="plot-picker__area tabular">
+          <span data-area>{DEFAULT_SIZE}</span><span class="plot-picker__unit">m²</span>
+        </p>
+        <p class="plot-picker__note" data-note>{plotSizeNotes[DEFAULT_SIZE]}</p>
+      </div>
+
+      <Button
+        href={leadHref({ source: 'home-parcelas', size: DEFAULT_SIZE })}
+        class="plot-picker__cta"
+        data-cta
+      >
+        Consultar disponibilidad
+      </Button>
+    </div>
+
+    <div class="plot-picker__figure" data-reveal>
+      <div class="plot-picker__diagram">
+        <div class="plot-picker__canvas">
+          {
+            squares.map((square) => (
+              <button
+                type="button"
+                class="plot-picker__square"
+                style={`width: ${square.side}; height: ${square.side}`}
+                aria-label={`Ver parcela de ${square.size} m²`}
+                aria-pressed={square.size === DEFAULT_SIZE ? 'true' : 'false'}
+                data-size={square.size}
+              />
+            ))
+          }
+          {
+            squares.map((square) => (
+              <span
+                class="plot-picker__label tabular"
+                style={`top: ${square.top}`}
+                data-label={square.size}
+                data-active={square.size === DEFAULT_SIZE ? '' : undefined}
+                aria-hidden="true"
+              >
+                {square.size} m²
+              </span>
+            ))
+          }
+        </div>
+        <p class="plot-picker__caption">Superficies a escala real entre sí.</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" data-notes set:html={JSON.stringify(plotSizeNotes)} />
+</section>
+
+<script>
+  import { leadHref } from '../../lib/lead';
+
+  document.querySelectorAll<HTMLElement>('[data-plot-picker]').forEach((root) => {
+    const notes: Record<string, string> = JSON.parse(
+      root.querySelector('[data-notes]')?.textContent ?? '{}',
+    );
+    const controls = root.querySelectorAll<HTMLButtonElement>('button[data-size]');
+    const labels = root.querySelectorAll<HTMLElement>('[data-label]');
+    const area = root.querySelector('[data-area]');
+    const note = root.querySelector('[data-note]');
+    const cta = root.querySelector<HTMLAnchorElement>('[data-cta]');
+
+    const select = (size: string) => {
+      controls.forEach((el) => el.setAttribute('aria-pressed', String(el.dataset.size === size)));
+      labels.forEach((el) => el.toggleAttribute('data-active', el.dataset.label === size));
+      if (area) area.textContent = size;
+      if (note) note.textContent = notes[size] ?? '';
+      if (cta) cta.href = leadHref({ source: 'home-parcelas', size });
+    };
+
+    controls.forEach((el) => el.addEventListener('click', () => select(el.dataset.size ?? '')));
+  });
+</script>
+
+<style>
+  .plot-picker {
+    background: var(--color-sand-bg);
+    border-block: 1px solid var(--color-sand-soft);
+  }
+
+  .plot-picker__inner {
+    align-items: center;
+    padding-block: clamp(88px, 11vw, 150px);
+  }
+
+  .plot-picker__title {
+    max-width: 12ch;
+  }
+
+  .plot-picker__lead {
+    max-width: 44ch;
+    margin-top: 24px;
+  }
+
+  .plot-picker__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 36px;
+  }
+
+  .plot-picker__readout {
+    margin-top: 40px;
+  }
+
+  .plot-picker__area {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    font-size: clamp(4rem, 7vw, 6.5rem);
+    font-weight: 300;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  .plot-picker__unit {
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--color-muted);
+  }
+
+  .plot-picker__note {
+    max-width: 40ch;
+    min-height: 3.2em;
+    margin-top: 14px;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+  }
+
+  .plot-picker :global(.plot-picker__cta) {
+    margin-top: 28px;
+  }
+
+  .plot-picker__figure {
+    display: flex;
+    justify-content: center;
+  }
+
+  .plot-picker__diagram {
+    width: min(100%, 520px);
+    padding-right: 72px;
+  }
+
+  .plot-picker__canvas {
+    position: relative;
+    aspect-ratio: 1;
+  }
+
+  .plot-picker__square {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 0;
+    border: 1px solid var(--color-sand-line);
+    border-radius: 6px;
+    background: transparent;
+    transition:
+      background-color 0.35s ease,
+      border-color 0.35s ease;
+  }
+
+  .plot-picker__square:hover {
+    border-color: var(--color-teal);
+  }
+
+  .plot-picker__square[aria-pressed='true'] {
+    border: 2px solid var(--color-teal);
+    background: rgb(22 124 136 / 0.16);
+  }
+
+  .plot-picker__label {
+    position: absolute;
+    left: calc(100% + 16px);
+    transform: translateY(-50%);
+    font-size: var(--fs-xs);
+    white-space: nowrap;
+    color: var(--color-sand-ink);
+  }
+
+  .plot-picker__label[data-active] {
+    font-weight: 700;
+    color: var(--color-teal-dark);
+  }
+
+  /* On phones the squares are too close for five labels; the chips already list every size. */
+  @media (max-width: 559px) {
+    .plot-picker__label:not([data-active]) {
+      display: none;
+    }
+  }
+
+  .plot-picker__caption {
+    margin-top: 18px;
+    font-size: var(--fs-xs);
+    color: var(--color-sand-ink);
+  }
+</style>

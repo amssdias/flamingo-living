@@ -1,0 +1,44 @@
+---
+import { islaStatusLabel, type IslaStatus } from '../../data/islas';
+
+interface Props {
+  status: IslaStatus;
+  class?: string;
+}
+
+const { status, class: className } = Astro.props;
+---
+
+<span class:list={['status', `status--${status}`, className]}>
+  <span class="status__dot" aria-hidden="true"></span>{islaStatusLabel[status]}
+</span>
+
+<style>
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .status__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--dot);
+  }
+
+  .status--comercializacion {
+    --dot: var(--color-teal);
+  }
+
+  .status--preventa {
+    --dot: var(--color-status-presale);
+  }
+
+  .status--proximamente {
+    --dot: var(--color-status-soon);
+  }
+</style>

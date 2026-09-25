@@ -1,0 +1,36 @@
+---
+import IslaRow from '../../components/proyectos/IslaRow.astro';
+import ImageHero from '../../components/ui/ImageHero.astro';
+import { islas } from '../../data/islas';
+import { photos } from '../../data/photos';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Proyectos"
+  description="Las cuatro islas de Ciudad Flamingo: fases con su propio carácter, tamaños de parcela y calendario."
+  heroOverlay
+>
+  <ImageHero photo={photos.aerialDevelopment} height="medium">
+    <h1 class="t-h1 projects-hero__title">Las islas de Ciudad Flamingo</h1>
+    <p class="projects-hero__lead">Cuatro fases con su propio carácter, tamaños y calendario.</p>
+  </ImageHero>
+
+  <section class="container section-sm" aria-label="Listado de islas">
+    {islas.map((isla) => <IslaRow isla={isla} />)}
+  </section>
+</BaseLayout>
+
+<style>
+  .projects-hero__title {
+    max-width: 12ch;
+  }
+
+  .projects-hero__lead {
+    max-width: 44ch;
+    margin-top: 20px;
+    font-size: var(--fs-body-lg);
+    line-height: 1.55;
+    color: var(--color-on-dark-muted);
+  }
+</style>

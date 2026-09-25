@@ -1,0 +1,33 @@
+---
+import type { GetStaticPaths } from 'astro';
+import IslaGallery from '../../components/proyectos/IslaGallery.astro';
+import IslaHero from '../../components/proyectos/IslaHero.astro';
+import IslaOverview from '../../components/proyectos/IslaOverview.astro';
+import Masterplan from '../../components/proyectos/Masterplan.astro';
+import PlotMap from '../../components/proyectos/PlotMap.astro';
+import { islas, type Isla } from '../../data/islas';
+import { getSamplePlots } from '../../data/plots';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export const getStaticPaths = (() =>
+  islas.map((isla, index) => ({
+    params: { slug: isla.slug },
+    props: { isla, index },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  isla: Isla;
+  index: number;
+}
+
+const { isla, index } = Astro.props;
+const plots = getSamplePlots(isla, index);
+---
+
+<BaseLayout title={isla.name} description={`${isla.name}, Ciudad Flamingo. ${isla.intro}`} heroOverlay>
+  <IslaHero isla={isla} />
+  <IslaOverview isla={isla} plots={plots} />
+  <PlotMap isla={isla} plots={plots} />
+  <IslaGallery isla={isla} />
+  <Masterplan current={isla} />
+</BaseLayout>

@@ -1,0 +1,43 @@
+---
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+
+export type IconWeight = 'regular' | 'light' | 'fill';
+
+interface Props {
+  name: string;
+  weight?: IconWeight;
+  size?: number | string;
+  class?: string;
+  /** Accessible name; omit for decorative icons. */
+  label?: string;
+}
+
+const { name, weight = 'regular', size = '1em', class: className, label } = Astro.props;
+
+// Phosphor SVGs are inlined at build time so no icon font ships to the browser.
+const require = createRequire(import.meta.url);
+const fileName = weight === 'regular' ? `${name}.svg` : `${name}-${weight}.svg`;
+const source = readFileSync(require.resolve(`@phosphor-icons/core/${weight}/${fileName}`), 'utf8');
+const paths = source.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 256 256"
+  width={size}
+  height={size}
+  fill="currentColor"
+  class:list={['icon', className]}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+  set:html={paths}
+/>
+
+<style>
+  .icon {
+    flex-shrink: 0;
+  }
+</style>

@@ -1,0 +1,141 @@
+---
+import type { Avance } from '../../data/avances';
+import Photo from '../ui/Photo.astro';
+
+interface Props {
+  avance: Avance;
+}
+
+const { avance } = Astro.props;
+const [lead, ...details] = avance.photos;
+---
+
+<article class="avance" data-avance data-isla={avance.isla} data-reveal>
+  <header class="avance__meta">
+    <div class="avance__sticky">
+      <p class="avance__month">{avance.month}</p>
+      <p class="avance__year tabular">{avance.year}</p>
+      <p class="avance__tags">
+        <span class="avance__tag avance__tag--isla">{avance.isla}</span>
+        <span class="avance__tag avance__tag--phase">{avance.phase}</span>
+      </p>
+    </div>
+  </header>
+
+  <div>
+    <h2 class="avance__title">{avance.title}</h2>
+    <p class="avance__text">{avance.text}</p>
+    <div class="avance__photos">
+      <Photo photo={lead} ratio="16/8" class="media avance__lead-photo" sizes="(min-width: 900px) 60vw, 100vw" />
+      {
+        details.map((photo, index) => (
+          <Photo
+            photo={photo}
+            ratio="4/3"
+            class:list={['media', 'avance__photo', { 'media--sand': index % 2 === 0 }]}
+            sizes="(min-width: 900px) 20vw, (min-width: 640px) 33vw, 100vw"
+          />
+        ))
+      }
+    </div>
+  </div>
+</article>
+
+<style>
+  .avance {
+    display: grid;
+    gap: clamp(20px, 4vw, 56px);
+    padding-block: 48px;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .avance__month {
+    font-size: clamp(1.75rem, 2.6vw, 2.375rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .avance__year {
+    margin-top: 4px;
+    font-size: 1.0625rem;
+    color: var(--color-muted);
+  }
+
+  .avance__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 20px;
+  }
+
+  .avance__tag {
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+  }
+
+  .avance__tag--isla {
+    background: var(--color-teal-soft);
+    color: var(--color-teal-deep);
+  }
+
+  .avance__tag--phase {
+    background: var(--color-sand);
+    color: var(--color-sand-deep);
+  }
+
+  .avance__title {
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .avance__text {
+    max-width: 60ch;
+    margin-top: 12px;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+
+  .avance__photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .avance__photos :global(.avance__lead-photo) {
+    grid-column: 1 / -1;
+  }
+
+  .avance__photos :global(.avance__photo) {
+    border-radius: var(--radius-lg);
+  }
+
+  /* Phones: the three detail photos become a row of thumbnails under the lead photo. */
+  @media (max-width: 639px) {
+    .avance__photos {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .avance__photos :global(.avance__photo) {
+      border-radius: var(--radius-md);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .avance {
+      grid-template-columns: 1fr 2fr;
+    }
+
+    .avance__sticky {
+      position: sticky;
+      top: calc(var(--header-height) + 32px);
+    }
+  }
+</style>

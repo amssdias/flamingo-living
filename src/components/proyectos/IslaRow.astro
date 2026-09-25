@@ -1,0 +1,117 @@
+---
+import { islaUrl, sizeRange, type Isla } from '../../data/islas';
+import { leadHref } from '../../lib/lead';
+import Button from '../ui/Button.astro';
+import Photo from '../ui/Photo.astro';
+import StatusBadge from '../ui/StatusBadge.astro';
+
+interface Props {
+  isla: Isla;
+}
+
+const { isla } = Astro.props;
+const href = islaUrl(isla);
+---
+
+<article class="isla-row" data-reveal>
+  <div class="isla-row__info">
+    <span class="isla-row__numeral" aria-hidden="true">{isla.numeral}</span>
+    <div class="isla-row__body">
+      <h2 class="isla-row__name">{isla.name}</h2>
+      <StatusBadge status={isla.status} class="isla-row__status" />
+      <p class="isla-row__summary">{isla.summary}</p>
+      <p class="isla-row__range tabular">Parcelas de {sizeRange(isla)}</p>
+      <div class="isla-row__actions">
+        <Button href={href} size="sm">Ver proyecto</Button>
+        <Button href={leadHref({ source: 'proyectos-lista', isla: isla.name })} variant="outline-soft" size="sm">
+          Consultar disponibilidad
+        </Button>
+      </div>
+    </div>
+  </div>
+
+  <div class="isla-row__photo">
+    <Photo photo={isla.cover} alt="" ratio="16/10" class="media" sizes="(min-width: 900px) 50vw, 100vw" />
+    {/* Overlay instead of a wrapping link: the photo credit already contains links. */}
+    <a href={href} class="isla-row__photo-link" tabindex="-1" aria-hidden="true"></a>
+  </div>
+</article>
+
+<style>
+  .isla-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    gap: clamp(28px, 4vw, 64px);
+    align-items: center;
+    padding-block: clamp(40px, 5vw, 72px);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .isla-row__info {
+    display: grid;
+    gap: 12px;
+  }
+
+  .isla-row__numeral {
+    min-width: 1.2ch;
+    font-size: clamp(5.5rem, 15vw, 13.75rem);
+    font-weight: 300;
+    letter-spacing: -0.06em;
+    line-height: 0.8;
+    color: var(--color-teal);
+  }
+
+  .isla-row__name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .isla-row :global(.isla-row__status) {
+    margin-top: 10px;
+    color: var(--color-muted);
+  }
+
+  .isla-row__summary {
+    max-width: 40ch;
+    margin-top: 18px;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+
+  .isla-row__range {
+    margin-top: 14px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+
+  .isla-row__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .isla-row__photo {
+    position: relative;
+  }
+
+  .isla-row__photo-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  @media (min-width: 560px) {
+    .isla-row__info {
+      grid-template-columns: auto 1fr;
+      gap: clamp(20px, 3vw, 40px);
+      align-items: start;
+    }
+
+    .isla-row__body {
+      padding-top: 8px;
+    }
+  }
+</style>

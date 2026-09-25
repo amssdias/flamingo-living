@@ -1,0 +1,97 @@
+---
+import type { Photo } from '../../data/photos';
+import { authorUrl, photoSrcset, photoUrl, UNSPLASH_URL } from '../../lib/unsplash';
+
+interface Props {
+  photo: Photo;
+  /** Defaults to the photo's own alt text; pass "" for decorative images. */
+  alt?: string;
+  sizes?: string;
+  /** CSS aspect-ratio, e.g. "4/3". Without it the photo fills its parent's height. */
+  ratio?: string;
+  /** Absolutely fills the nearest positioned ancestor (backgrounds, heroes). */
+  fill?: boolean;
+  priority?: boolean;
+  class?: string;
+}
+
+const {
+  photo,
+  alt = photo.alt,
+  sizes = '100vw',
+  ratio,
+  fill = false,
+  priority = false,
+  class: className,
+} = Astro.props;
+---
+
+<figure
+  class:list={['photo', { 'photo--fill': fill }, className]}
+  style={ratio ? `aspect-ratio: ${ratio}` : undefined}
+>
+  <img
+    src={photoUrl(photo, 1200)}
+    srcset={photoSrcset(photo)}
+    sizes={sizes}
+    alt={alt}
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : 'auto'}
+    decoding="async"
+  />
+  <figcaption class="photo__credit">
+    Photo by <a href={authorUrl(photo)} target="_blank" rel="noopener noreferrer">{photo.author}</a>{' '}
+    on <a href={UNSPLASH_URL} target="_blank" rel="noopener noreferrer">Unsplash</a>
+  </figcaption>
+</figure>
+
+<style>
+  .photo {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .photo--fill {
+    position: absolute;
+    inset: 0;
+  }
+
+  .photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Bottom-right keeps the credit clear of text overlays, which sit bottom-left. */
+  .photo__credit {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    z-index: 2;
+    max-width: calc(100% - 16px);
+    padding: 3px 7px;
+    border-radius: 5px;
+    background: rgb(0 0 0 / 0.5);
+    color: #fff;
+    font-size: 10px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .photo__credit a {
+    color: inherit;
+  }
+
+  .photo__credit a:hover,
+  .photo__credit a:focus-visible {
+    color: inherit;
+    text-decoration: underline;
+  }
+</style>

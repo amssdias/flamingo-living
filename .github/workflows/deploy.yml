@@ -1,0 +1,43 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer push supersedes a queued one, but never cancels a running deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # Optional repository variables (Settings → Secrets and variables → Actions → Variables).
+      PUBLIC_HUBSPOT_PORTAL_ID: ${{ vars.PUBLIC_HUBSPOT_PORTAL_ID }}
+      PUBLIC_HUBSPOT_FORM_ID: ${{ vars.PUBLIC_HUBSPOT_FORM_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install, build and upload
+        uses: withastro/action@v6
+        with:
+          node-version: 22
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v5

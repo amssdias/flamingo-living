@@ -1,0 +1,41 @@
+---
+interface Props {
+  size?: 'md' | 'lg';
+}
+
+const { size = 'md' } = Astro.props;
+---
+
+<span class:list={['logo', `logo--${size}`]}>
+  <span class="logo__mark" aria-hidden="true"></span>
+  <span class="logo__word">Flamingo Living</span>
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+  }
+
+  .logo__mark {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, var(--color-sand-brand) 50%, var(--color-teal) 50%);
+  }
+
+  .logo__word {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .logo--md .logo__word {
+    font-size: 1.125rem;
+  }
+
+  .logo--lg .logo__word {
+    font-size: 1.25rem;
+  }
+</style>

@@ -1,0 +1,158 @@
+---
+import { islaUrl, islas, type Isla } from '../../data/islas';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  current: Isla;
+}
+
+const { current } = Astro.props;
+const others = islas.filter((isla) => isla.slug !== current.slug);
+---
+
+<section class="container masterplan split" style="--split-min: 380px">
+  <div>
+    <h2 class="t-h2-sm" data-reveal>Dentro de Ciudad Flamingo</h2>
+    <p class="t-lead masterplan__text" data-reveal>{current.location}</p>
+    <div class="masterplan__links">
+      {
+        others.map((isla) => (
+          <Button href={islaUrl(isla)} variant="outline-soft" size="sm">
+            Ver {isla.name}
+          </Button>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="masterplan__scheme" data-reveal>
+    <div class="masterplan__sea">Mar Caribe</div>
+    <div class="masterplan__coast">Costa</div>
+    <nav class="masterplan__islas" aria-label="Islas en el plano">
+      {
+        islas.map((isla) => (
+          <a
+            href={islaUrl(isla)}
+            class="masterplan__isla"
+            aria-current={isla.slug === current.slug ? 'page' : undefined}
+          >
+            <span class="masterplan__numeral">{isla.numeral}</span>
+            <span class="masterplan__name">{isla.name}</span>
+          </a>
+        ))
+      }
+    </nav>
+    <div class="masterplan__access">Acceso principal</div>
+    <p class="masterplan__caption">Esquema orientativo. Sustituir por el masterplan oficial.</p>
+  </div>
+</section>
+
+<style>
+  .masterplan {
+    --split-gap: clamp(40px, 6vw, 96px);
+    align-items: center;
+    padding-bottom: var(--section-space-sm);
+  }
+
+  .masterplan__text {
+    max-width: 42ch;
+    margin-top: 20px;
+    font-size: 1.0625rem;
+  }
+
+  .masterplan__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 28px;
+  }
+
+  .masterplan__scheme {
+    padding: clamp(20px, 3vw, 36px);
+    border: 1px solid var(--color-sand-soft);
+    border-radius: var(--radius-xl);
+    background: var(--color-sand-bg);
+  }
+
+  .masterplan__sea,
+  .masterplan__coast,
+  .masterplan__access {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--color-sand-ink);
+  }
+
+  .masterplan__sea {
+    height: 44px;
+    border-radius: 10px;
+    background: var(--color-teal-soft);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--color-teal-dark);
+  }
+
+  .masterplan__coast {
+    height: 28px;
+    margin-block: 10px;
+    border-radius: var(--radius-sm);
+    background: var(--color-sand-soft);
+  }
+
+  .masterplan__islas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .masterplan__isla {
+    aspect-ratio: 4 / 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    border: 1px solid var(--color-line);
+    border-radius: 10px;
+    background: var(--color-paper);
+    color: var(--color-ink-soft);
+    transition: border-color var(--duration-base) ease;
+  }
+
+  .masterplan__isla:hover {
+    border-color: var(--color-teal);
+    color: var(--color-ink-soft);
+  }
+
+  .masterplan__isla[aria-current='page'] {
+    border-color: var(--color-teal);
+    background: var(--color-teal);
+    color: var(--color-paper);
+  }
+
+  .masterplan__numeral {
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-weight: 300;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .masterplan__name {
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .masterplan__access {
+    height: 28px;
+    margin-top: 10px;
+    border: 1px dashed var(--color-sand-border);
+    border-radius: var(--radius-sm);
+  }
+
+  .masterplan__caption {
+    margin-top: 14px;
+    font-size: 0.75rem;
+    color: var(--color-sand-ink);
+  }
+</style>

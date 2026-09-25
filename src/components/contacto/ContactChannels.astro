@@ -1,0 +1,80 @@
+---
+import { contact } from '../../data/site';
+import Icon from '../ui/Icon.astro';
+
+const channels = [
+  { icon: 'whatsapp-logo', title: 'WhatsApp', ...contact.whatsapp, external: true },
+  { icon: 'envelope-simple', title: 'Email', ...contact.email, external: false },
+  { icon: 'phone', title: 'Teléfono', ...contact.phone, external: false },
+];
+---
+
+<ul class="channels">
+  {
+    channels.map((channel) => (
+      <li>
+        <a
+          href={channel.href}
+          class="channels__link"
+          {...(channel.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        >
+          <Icon name={channel.icon} weight="light" size={28} class="channels__icon" />
+          <span class="channels__text">
+            <span class="channels__title">{channel.title}</span>
+            <span class="channels__value">{channel.label}</span>
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .channels {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 440px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .channels__link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    color: var(--color-ink);
+    transition:
+      border-color var(--duration-base) ease,
+      background-color var(--duration-base) ease;
+  }
+
+  .channels__link:hover {
+    border-color: var(--color-teal);
+    background: var(--color-mist);
+    color: var(--color-ink);
+  }
+
+  .channels :global(.channels__icon) {
+    color: var(--color-teal);
+  }
+
+  .channels__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .channels__title {
+    font-weight: 500;
+  }
+
+  .channels__value {
+    font-size: var(--fs-sm);
+    color: var(--color-muted);
+    overflow-wrap: anywhere;
+  }
+</style>

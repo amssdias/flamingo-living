@@ -1,0 +1,64 @@
+---
+import { photos } from '../../data/photos';
+import Photo from '../ui/Photo.astro';
+---
+
+<section class="container section split intro" style="--split-min: 440px">
+  <div>
+    <h2 class="t-h2 intro__title" data-reveal>Un nuevo lugar para vivir, invertir y disfrutar</h2>
+    <p class="t-lead intro__text" data-reveal>
+      Ciudad Flamingo es un desarrollo de parcelas en Falcón, pensado para quienes buscan tierra
+      propia en una zona con potencial de crecimiento, a pocos minutos del Caribe venezolano.
+    </p>
+    <p class="t-lead intro__text intro__text--tight" data-reveal>
+      Aquí cada propietario decide qué construir y cuándo hacerlo.
+    </p>
+  </div>
+
+  <div class="intro__collage">
+    <div data-reveal>
+      <Photo photo={photos.falconBeach} ratio="3/4" class="media" sizes="(min-width: 900px) 30vw, 55vw" />
+    </div>
+    <div class="intro__stack">
+      <div data-reveal>
+        <Photo photo={photos.terrain} ratio="1/1" class="media media--sand" sizes="(min-width: 900px) 24vw, 45vw" />
+      </div>
+      <div data-reveal>
+        <Photo photo={photos.aerialView} ratio="4/3" class="media" sizes="(min-width: 900px) 24vw, 45vw" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .intro {
+    align-items: center;
+  }
+
+  .intro__title {
+    max-width: 14ch;
+  }
+
+  .intro__text {
+    max-width: 52ch;
+    margin-top: 28px;
+  }
+
+  .intro__text--tight {
+    margin-top: 16px;
+  }
+
+  .intro__collage {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: clamp(10px, 1.4vw, 16px);
+    align-items: start;
+  }
+
+  .intro__stack {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 1.4vw, 16px);
+    margin-top: 22%;
+  }
+</style>

@@ -1,0 +1,27 @@
+{
+  "name": "flamingo-living",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "check": "astro check",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@phosphor-icons/core": "^2.1.1",
+    "astro": "^7.3.5"
+  },
+  "allowScripts": {
+    "esbuild": true
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^22.20.4",
+    "typescript": "^6.0.3"
+  }
+}

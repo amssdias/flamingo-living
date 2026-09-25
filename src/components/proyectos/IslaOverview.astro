@@ -1,0 +1,118 @@
+---
+import { islaStatusLabel, sizeRange, type Isla } from '../../data/islas';
+import type { Plot } from '../../data/plots';
+import { site } from '../../data/site';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  isla: Isla;
+  plots: Plot[];
+}
+
+const { isla, plots } = Astro.props;
+
+const availableLabel = !site.showAvailability
+  ? 'Consultar'
+  : isla.status === 'proximamente'
+    ? islaStatusLabel.proximamente
+    : String(plots.filter((plot) => plot.status === 'disponible').length);
+
+const stats = [
+  { label: 'Tamaños', value: sizeRange(isla) },
+  { label: 'Estado', value: islaStatusLabel[isla.status] },
+  { label: 'Parcelas en la fase', value: String(plots.length) },
+  { label: 'Disponibles', value: availableLabel, highlight: true },
+];
+---
+
+<section class="container section-sm split overview" style="--split-min: 380px">
+  <div>
+    <p class="overview__intro" data-reveal>{isla.intro}</p>
+    <ul class="overview__features" data-reveal>
+      {
+        isla.features.map((feature) => (
+          <li>
+            <Icon name={feature.icon} weight="light" size={24} class="overview__icon" />
+            <span>{feature.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <dl class="overview__stats" data-reveal>
+    {
+      stats.map((stat) => (
+        <div class="overview__stat">
+          <dt>{stat.label}</dt>
+          <dd class:list={['tabular', { 'overview__stat-value--highlight': stat.highlight }]}>
+            {stat.value}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<style>
+  .overview__intro {
+    max-width: 30ch;
+    font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    text-wrap: pretty;
+  }
+
+  .overview__features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px 28px;
+    margin-top: 36px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .overview__features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    line-height: 1.45;
+    color: var(--color-ink-soft);
+  }
+
+  .overview :global(.overview__icon) {
+    color: var(--color-teal);
+  }
+
+  .overview__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    align-self: start;
+    margin: 0;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+
+  .overview__stat {
+    padding: clamp(18px, 2vw, 24px);
+    background: var(--color-paper);
+  }
+
+  .overview__stat dt {
+    font-size: var(--fs-sm);
+    color: var(--color-muted);
+  }
+
+  .overview__stat dd {
+    margin: 8px 0 0;
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    font-weight: 500;
+  }
+
+  .overview__stat-value--highlight {
+    color: var(--color-teal);
+  }
+</style>

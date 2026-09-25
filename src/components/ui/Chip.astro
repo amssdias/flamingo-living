@@ -1,0 +1,55 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'button'> & {
+  pressed?: boolean;
+  size?: 'sm' | 'md';
+};
+
+const { pressed = false, size = 'md', class: className, ...rest } = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={['chip', `chip--${size}`, className]}
+  aria-pressed={pressed ? 'true' : 'false'}
+  {...rest}
+>
+  <slot />
+</button>
+
+<style>
+  .chip {
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-ink);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    transition:
+      background-color var(--duration-base) ease,
+      color var(--duration-base) ease,
+      border-color var(--duration-base) ease;
+  }
+
+  .chip:hover {
+    border-color: var(--color-ink);
+  }
+
+  .chip[aria-pressed='true'] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  .chip--md {
+    padding: 11px 18px;
+    font-size: 0.9375rem;
+  }
+
+  .chip--sm {
+    padding: 9px 15px;
+    font-size: var(--fs-sm);
+  }
+</style>

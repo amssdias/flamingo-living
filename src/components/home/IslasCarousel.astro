@@ -1,0 +1,66 @@
+---
+import { islas } from '../../data/islas';
+import { url } from '../../lib/paths';
+import IslaCard from '../proyectos/IslaCard.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+---
+
+<section class="section islas-carousel" aria-labelledby="islas-carousel-title">
+  <div class="container islas-carousel__head">
+    <h2 id="islas-carousel-title" class="t-h2 islas-carousel__title" data-reveal>
+      Cuatro islas, un mismo Caribe
+    </h2>
+    <Button href={url('/proyectos/')} variant="outline" size="sm">
+      Todos los proyectos <Icon name="arrow-right" />
+    </Button>
+  </div>
+
+  <ul class="islas-carousel__track" tabindex="0" aria-label="Proyectos, desplazable horizontalmente">
+    {
+      islas.map((isla) => (
+        <li class="islas-carousel__item" data-reveal>
+          <IslaCard isla={isla} />
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .islas-carousel__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .islas-carousel__title {
+    max-width: 13ch;
+  }
+
+  .islas-carousel__track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(400px, 82vw);
+    gap: 20px;
+    max-width: var(--container-max);
+    margin: 48px auto 0;
+    padding: 0 var(--gutter) 12px;
+    list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+
+  .islas-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .islas-carousel__item {
+    scroll-snap-align: start;
+  }
+</style>

@@ -1,0 +1,141 @@
+---
+import { photos } from '../../data/photos';
+import { leadHref } from '../../lib/lead';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import Photo from '../ui/Photo.astro';
+
+const steps = [
+  {
+    icon: 'video-camera',
+    title: 'Asesoría a distancia',
+    text: 'Videollamadas en tu horario para resolver dudas y recorrer el proyecto.',
+  },
+  {
+    icon: 'file-text',
+    title: 'Documentación clara',
+    text: 'Toda la información legal y del terreno, explicada paso a paso.',
+  },
+  {
+    icon: 'images',
+    title: 'Seguimiento del avance',
+    text: 'Fotos y vídeos mensuales de las obras, estés donde estés.',
+  },
+  {
+    icon: 'handshake',
+    title: 'Acompañamiento en la firma',
+    text: 'Te guiamos en la reserva y la compra, presencial o a distancia.',
+  },
+];
+---
+
+<section class="investors">
+  <div class="container split investors__inner">
+    <div>
+      <h2 class="t-h2 investors__title" data-reveal>Invierte en Venezuela desde cualquier lugar</h2>
+      <p class="t-lead investors__lead" data-reveal>
+        Acompañamos por igual a compradores en Venezuela y a quienes viven fuera, con un asesor
+        dedicado de la primera llamada a la firma.
+      </p>
+      <div class="investors__photo" data-reveal>
+        <Photo photo={photos.advisorCall} ratio="16/10" class="media" sizes="(min-width: 900px) 560px, 100vw" />
+      </div>
+    </div>
+
+    <div class="investors__steps">
+      <ol>
+        {
+          steps.map((step) => (
+            <li class="investors__step" data-reveal>
+              <Icon name={step.icon} weight="light" size={30} class="investors__icon" />
+              <div>
+                <h3 class="investors__step-title">{step.title}</h3>
+                <p>{step.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+      <Button
+        href={leadHref({ source: 'home-inversores', motivo: 'Inversión' })}
+        variant="teal"
+        class="investors__cta"
+      >
+        <Icon name="chat-circle-text" size={18} />Hablar con un asesor
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .investors {
+    background: var(--color-mist);
+  }
+
+  .investors__inner {
+    padding-block: clamp(88px, 11vw, 150px);
+  }
+
+  .investors__title {
+    max-width: 13ch;
+  }
+
+  .investors__lead {
+    max-width: 48ch;
+    margin-top: 28px;
+  }
+
+  .investors__photo {
+    max-width: 560px;
+    margin-top: 36px;
+  }
+
+  .investors__steps {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .investors__steps ol {
+    padding: 0;
+    list-style: none;
+  }
+
+  .investors__step {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 20px;
+    padding-block: 28px;
+    border-top: 1px solid var(--color-line-cool);
+  }
+
+  .investors :global(.investors__icon) {
+    color: var(--color-teal);
+  }
+
+  .investors__step-title {
+    margin-bottom: 6px;
+    font-size: 1.375rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .investors__step p {
+    max-width: 44ch;
+    line-height: 1.55;
+    color: var(--color-muted);
+  }
+
+  .investors :global(.investors__cta) {
+    align-self: flex-start;
+    margin-top: 28px;
+  }
+
+  @media (max-width: 559px) {
+    .investors__step {
+      grid-template-columns: 36px 1fr;
+      gap: 14px;
+      padding-block: 22px;
+    }
+  }
+</style>

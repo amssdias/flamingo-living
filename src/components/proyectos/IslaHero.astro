@@ -1,0 +1,95 @@
+---
+import type { Isla } from '../../data/islas';
+import { leadHref } from '../../lib/lead';
+import { url } from '../../lib/paths';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import ImageHero from '../ui/ImageHero.astro';
+import StatusBadge from '../ui/StatusBadge.astro';
+
+interface Props {
+  isla: Isla;
+}
+
+const { isla } = Astro.props;
+---
+
+<ImageHero photo={isla.hero} height="tall">
+  <div class="isla-hero">
+    <div class="isla-hero__identity">
+      <span class="isla-hero__numeral" aria-hidden="true">{isla.numeral}</span>
+      <div class="isla-hero__meta">
+        <a href={url('/proyectos/')} class="isla-hero__back"><Icon name="arrow-left" />Proyectos</a>
+        <h1 class="isla-hero__name">{isla.name}</h1>
+        <StatusBadge status={isla.status} class="isla-hero__status" />
+      </div>
+    </div>
+    <div class="isla-hero__actions">
+      <Button href={leadHref({ source: 'proyecto-hero', isla: isla.name })} variant="light" size="sm">
+        Solicitar información
+      </Button>
+      <Button href="#plano" variant="glass" size="sm">Consultar disponibilidad</Button>
+    </div>
+  </div>
+</ImageHero>
+
+<style>
+  .isla-hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+  }
+
+  .isla-hero__identity {
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(16px, 3vw, 36px);
+  }
+
+  .isla-hero__numeral {
+    font-size: clamp(6.5rem, 17vw, 16.25rem);
+    font-weight: 300;
+    letter-spacing: -0.06em;
+    line-height: 0.78;
+  }
+
+  .isla-hero__meta {
+    padding-bottom: 6px;
+  }
+
+  .isla-hero__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: var(--color-on-dark-muted);
+  }
+
+  .isla-hero__back:hover {
+    color: var(--color-on-dark);
+    text-decoration: underline;
+  }
+
+  .isla-hero__name {
+    margin-top: 12px;
+    font-size: clamp(2rem, 3.6vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+  }
+
+  .isla-hero :global(.isla-hero__status) {
+    margin-top: 10px;
+    font-size: 0.9375rem;
+    color: var(--color-on-dark-muted);
+  }
+
+  .isla-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+</style>

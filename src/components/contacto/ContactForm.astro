@@ -1,0 +1,381 @@
+---
+import { islas } from '../../data/islas';
+import { interestReasons, plotSizes } from '../../data/site';
+import Button from '../ui/Button.astro';
+import Chip from '../ui/Chip.astro';
+import Icon from '../ui/Icon.astro';
+import Field from './Field.astro';
+---
+
+<div class="contact-form" data-contact-form>
+  <div class="contact-form__success" data-success hidden tabindex="-1">
+    <Icon name="check-circle" weight="light" size={48} class="contact-form__success-icon" />
+    <h2 class="contact-form__success-title">Solicitud enviada</h2>
+    <p>
+      Gracias, <span data-success-name></span>. Un asesor de Flamingo Living te contactará por email o
+      teléfono.
+    </p>
+    <Button variant="outline" size="sm" data-reset>Enviar otra solicitud</Button>
+  </div>
+
+  <form id="hubspot-lead-form" class="contact-form__form" novalidate data-form>
+    <input type="hidden" name="lead_source" value="web:directo" />
+    <input type="hidden" name="utm_campaign" value="" />
+    <input type="hidden" name="parcela_interes" value="" />
+    <input type="hidden" name="motivo_interes" value="" />
+
+    <Field name="firstname" label="Nombre">
+      <input name="firstname" autocomplete="given-name" aria-describedby="firstname-error" />
+    </Field>
+    <Field name="lastname" label="Apellidos">
+      <input name="lastname" autocomplete="family-name" aria-describedby="lastname-error" />
+    </Field>
+    <Field name="email" label="Email">
+      <input name="email" type="email" autocomplete="email" aria-describedby="email-error" />
+    </Field>
+    <Field name="phone" label="Teléfono" hint="Con prefijo internacional, p. ej. +34 o +1.">
+      <input name="phone" type="tel" autocomplete="tel" aria-describedby="phone-hint phone-error" />
+    </Field>
+    <Field name="country" label="País de residencia">
+      <input name="country" autocomplete="country-name" aria-describedby="country-error" />
+    </Field>
+    <Field name="proyecto_interes" label="Proyecto de interés">
+      <select name="proyecto_interes">
+        <option value="">Aún no lo sé</option>
+        {islas.map((isla) => <option value={isla.name}>{isla.name}</option>)}
+      </select>
+    </Field>
+    <Field name="tamano_parcela" label="Tamaño aproximado de parcela" full>
+      <select name="tamano_parcela">
+        <option value="">Sin preferencia</option>
+        {plotSizes.map((size) => <option value={size}>{size} m²</option>)}
+      </select>
+    </Field>
+
+    <fieldset class="contact-form__reasons">
+      <legend>Motivo de interés</legend>
+      <div class="contact-form__chips">
+        {
+          interestReasons.map((reason) => (
+            <Chip size="sm" data-reason={reason}>
+              {reason}
+            </Chip>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <Field name="message" label="Mensaje" hint="Opcional" full>
+      <textarea name="message" rows="4" aria-describedby="message-hint"></textarea>
+    </Field>
+
+    <div class="contact-form__consent">
+      <label>
+        <input type="checkbox" name="privacy" aria-describedby="privacy-error" />
+        <span>Acepto la <a href="#privacidad">política de privacidad</a>.</span>
+      </label>
+      <span class="contact-form__error" id="privacy-error" data-error-for="privacy" hidden></span>
+    </div>
+
+    <p class="contact-form__error contact-form__submit-error" role="alert" data-submit-error hidden>
+      No se ha podido enviar la solicitud. Inténtalo de nuevo o escríbenos por WhatsApp.
+    </p>
+
+    <button type="submit" class="contact-form__submit" data-submit>Solicitar información</button>
+  </form>
+</div>
+
+<script>
+  import { buildPayload, submitLead } from '../../lib/hubspot';
+  import { LEAD_PARAMS } from '../../lib/lead';
+  import { validateLead, type LeadFormValues } from '../../lib/lead-form';
+
+  const root = document.querySelector<HTMLElement>('[data-contact-form]');
+  const form = root?.querySelector<HTMLFormElement>('[data-form]');
+
+  if (root && form) {
+    const success = root.querySelector<HTMLElement>('[data-success]');
+    const successName = root.querySelector('[data-success-name]');
+    const submitButton = form.querySelector<HTMLButtonElement>('[data-submit]');
+    const submitError = form.querySelector<HTMLElement>('[data-submit-error]');
+    const reasons = form.querySelectorAll<HTMLButtonElement>('[data-reason]');
+    const field = (name: string) =>
+      form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
+
+    const setValue = (name: string, value: string | null) => {
+      const el = field(name);
+      if (el && value) el.value = value;
+    };
+
+    const selectReason = (reason: string) => {
+      const motivo = field('motivo_interes');
+      if (motivo) motivo.value = reason;
+      reasons.forEach((chip) => chip.setAttribute('aria-pressed', String(chip.dataset.reason === reason)));
+    };
+
+    const prefillFromUrl = () => {
+      const params = new URLSearchParams(location.search);
+      const source = params.get(LEAD_PARAMS.source);
+      if (source) setValue('lead_source', `web:${source}`);
+      setValue('utm_campaign', params.get('utm_campaign'));
+      setValue('proyecto_interes', params.get(LEAD_PARAMS.isla));
+      setValue('tamano_parcela', params.get(LEAD_PARAMS.size));
+      setValue('parcela_interes', params.get(LEAD_PARAMS.plot));
+      const motivo = params.get(LEAD_PARAMS.motivo);
+      if (motivo) selectReason(motivo);
+    };
+
+    const showError = (name: string, message?: string) => {
+      const error = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      const control = field(name);
+      if (error) {
+        error.textContent = message ?? '';
+        error.hidden = !message;
+      }
+      if (message) control?.setAttribute('aria-invalid', 'true');
+      else control?.removeAttribute('aria-invalid');
+    };
+
+    const readValues = (): LeadFormValues => ({
+      firstname: field('firstname')?.value ?? '',
+      lastname: field('lastname')?.value ?? '',
+      email: field('email')?.value ?? '',
+      phone: field('phone')?.value ?? '',
+      country: field('country')?.value ?? '',
+      privacy: (field('privacy') as HTMLInputElement | null)?.checked ?? false,
+    });
+
+    const setSending = (sending: boolean) => {
+      if (!submitButton) return;
+      submitButton.disabled = sending;
+      submitButton.textContent = sending ? 'Enviando…' : 'Solicitar información';
+    };
+
+    reasons.forEach((chip) =>
+      chip.addEventListener('click', () => {
+        const current = field('motivo_interes')?.value;
+        selectReason(current === chip.dataset.reason ? '' : (chip.dataset.reason ?? ''));
+      }),
+    );
+
+    form.addEventListener('input', (event) => {
+      const target = event.target as HTMLInputElement;
+      if (target.name) showError(target.name);
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (submitError) submitError.hidden = true;
+
+      const values = readValues();
+      const errors = validateLead(values);
+      (Object.keys(values) as (keyof LeadFormValues)[]).forEach((name) => showError(name, errors[name]));
+
+      const firstInvalid = Object.keys(errors)[0];
+      if (firstInvalid) {
+        field(firstInvalid)?.focus();
+        return;
+      }
+
+      const fields = Object.fromEntries(
+        [...new FormData(form).entries()]
+          .filter(([name]) => name !== 'privacy')
+          .map(([name, value]) => [name, String(value).trim()]),
+      );
+
+      setSending(true);
+      try {
+        await submitLead(buildPayload(fields, 'Contacto'));
+        if (successName) successName.textContent = values.firstname.trim();
+        form.hidden = true;
+        if (success) {
+          success.hidden = false;
+          success.focus();
+        }
+      } catch (error) {
+        console.error(error);
+        if (submitError) submitError.hidden = false;
+      } finally {
+        setSending(false);
+      }
+    });
+
+    root.querySelector('[data-reset]')?.addEventListener('click', () => {
+      form.reset();
+      selectReason('');
+      prefillFromUrl();
+      if (success) success.hidden = true;
+      form.hidden = false;
+      field('firstname')?.focus();
+    });
+
+    prefillFromUrl();
+  }
+</script>
+
+<style>
+  .contact-form {
+    padding: clamp(24px, 3.4vw, 48px);
+    border-radius: var(--radius-2xl);
+    background: var(--color-mist);
+  }
+
+  .contact-form__form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 22px 16px;
+  }
+
+  .contact-form__form input:not([type='checkbox']),
+  .contact-form__form select,
+  .contact-form__form textarea {
+    width: 100%;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-paper);
+    font-size: 1rem;
+    color: var(--color-ink);
+    transition: border-color var(--duration-base) ease;
+  }
+
+  .contact-form__form input:not([type='checkbox']),
+  .contact-form__form select {
+    height: 52px;
+    padding: 0 16px;
+  }
+
+  .contact-form__form select {
+    padding-inline: 14px;
+  }
+
+  .contact-form__form textarea {
+    padding: 14px 16px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  .contact-form__form :is(input, select, textarea):focus-visible {
+    outline: 2px solid var(--color-teal);
+    outline-offset: 0;
+    border-color: var(--color-teal);
+  }
+
+  .contact-form__form :is(input, select, textarea)[aria-invalid] {
+    border-color: var(--color-error);
+  }
+
+  .contact-form__reasons {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .contact-form__reasons legend {
+    margin-bottom: 10px;
+    padding: 0;
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  .contact-form__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .contact-form__consent {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .contact-form__consent label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    cursor: pointer;
+  }
+
+  .contact-form__consent input {
+    width: 20px;
+    height: 20px;
+    margin: 1px 0 0;
+    flex-shrink: 0;
+    accent-color: var(--color-teal);
+  }
+
+  .contact-form__consent a {
+    text-decoration: underline;
+  }
+
+  .contact-form__error {
+    font-size: var(--fs-xs);
+    color: var(--color-error);
+  }
+
+  .contact-form__consent .contact-form__error {
+    padding-left: 32px;
+  }
+
+  .contact-form__submit-error {
+    grid-column: 1 / -1;
+  }
+
+  .contact-form__submit {
+    grid-column: 1 / -1;
+    height: 56px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-size: 1rem;
+    font-weight: 500;
+    transition:
+      background-color var(--duration-base) ease,
+      opacity var(--duration-base) ease,
+      transform var(--duration-fast) ease;
+  }
+
+  .contact-form__submit:hover {
+    background: var(--color-teal);
+  }
+
+  .contact-form__submit:active {
+    transform: scale(0.99);
+  }
+
+  .contact-form__submit:disabled {
+    opacity: 0.7;
+    cursor: progress;
+  }
+
+  .contact-form__success {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding-block: 48px;
+    outline: none;
+  }
+
+  .contact-form :global(.contact-form__success-icon) {
+    color: var(--color-teal);
+  }
+
+  .contact-form__success-title {
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .contact-form__success p {
+    max-width: 40ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+</style>

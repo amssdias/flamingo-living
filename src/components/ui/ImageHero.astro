@@ -1,0 +1,62 @@
+---
+import type { Photo as PhotoData } from '../../data/photos';
+import Photo from './Photo.astro';
+
+interface Props {
+  photo: PhotoData;
+  height?: 'full' | 'tall' | 'medium';
+  class?: string;
+}
+
+const { photo, height = 'tall', class: className } = Astro.props;
+---
+
+<section class:list={['image-hero', `image-hero--${height}`, className]}>
+  <Photo photo={photo} alt="" fill priority />
+  <div class="image-hero__scrim" aria-hidden="true"></div>
+  <div class="image-hero__content container">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .image-hero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    background: var(--color-night);
+    color: var(--color-on-dark);
+  }
+
+  .image-hero--full {
+    min-height: 100dvh;
+  }
+
+  .image-hero--tall {
+    min-height: 78dvh;
+  }
+
+  .image-hero--medium {
+    min-height: 72dvh;
+  }
+
+  .image-hero__scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgb(var(--scrim-rgb) / 0.4) 0%,
+      rgb(var(--scrim-rgb) / 0) 32%,
+      rgb(var(--scrim-rgb) / 0.2) 55%,
+      rgb(var(--scrim-rgb) / 0.72) 100%
+    );
+  }
+
+  .image-hero__content {
+    position: relative;
+    padding-top: calc(var(--header-height) + 48px);
+    padding-bottom: clamp(48px, 9vh, 96px);
+  }
+</style>

@@ -1,0 +1,115 @@
+/* Layout */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: var(--section-space);
+}
+
+.section-sm {
+  padding-block: var(--section-space-sm);
+}
+
+/* Two-column layout that collapses when a column would drop below --split-min. */
+.split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--split-min, 420px)), 1fr));
+  gap: var(--split-gap, var(--grid-gap-lg));
+}
+
+/* Typography */
+.t-hero,
+.t-h1,
+.t-h2,
+.t-h2-sm {
+  font-weight: 500;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.t-hero {
+  font-size: var(--fs-hero);
+  letter-spacing: var(--tracking-display);
+  line-height: 1.02;
+}
+
+.t-h1 {
+  font-size: var(--fs-h1);
+  letter-spacing: var(--tracking-display);
+  line-height: 1.02;
+}
+
+.t-h2 {
+  font-size: var(--fs-h2);
+  letter-spacing: var(--tracking-tight);
+}
+
+.t-h2-sm {
+  font-size: var(--fs-h2-sm);
+  letter-spacing: var(--tracking-tight);
+}
+
+.t-h3 {
+  font-size: var(--fs-h3);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.t-lead {
+  font-size: var(--fs-body-lg);
+  line-height: 1.62;
+  color: var(--color-muted);
+  text-wrap: pretty;
+}
+
+.t-muted {
+  color: var(--color-muted);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Media frame for photos and embeds */
+.media {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--color-mist-strong);
+}
+
+.media--sand {
+  background: var(--color-sand-soft);
+}
+
+/* Accessibility */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Scroll reveal: the script only adds .reveal to elements below the fold. */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s var(--ease-out),
+    transform 0.9s var(--ease-out);
+}
+
+.reveal.is-revealed {
+  opacity: 1;
+  transform: none;
+}

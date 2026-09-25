@@ -1,0 +1,27 @@
+---
+import FinalCta from '../components/home/FinalCta.astro';
+import Highlights from '../components/home/Highlights.astro';
+import HomeHero from '../components/home/HomeHero.astro';
+import Intro from '../components/home/Intro.astro';
+import Investors from '../components/home/Investors.astro';
+import IslasCarousel from '../components/home/IslasCarousel.astro';
+import Location from '../components/home/Location.astro';
+import PlotSizePicker from '../components/home/PlotSizePicker.astro';
+import WhyBento from '../components/home/WhyBento.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  description="Parcelas desde 230 m² en Ciudad Flamingo, Falcón, Venezuela, para construir, invertir y vivir cerca del mar Caribe."
+  heroOverlay
+>
+  <HomeHero />
+  <Highlights />
+  <Intro />
+  <WhyBento />
+  <PlotSizePicker />
+  <IslasCarousel />
+  <Investors />
+  <Location />
+  <FinalCta />
+</BaseLayout>

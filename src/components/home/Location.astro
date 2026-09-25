@@ -1,0 +1,114 @@
+---
+import { photos } from '../../data/photos';
+import Icon from '../ui/Icon.astro';
+import Photo from '../ui/Photo.astro';
+
+const MAP_SRC =
+  'https://www.openstreetmap.org/export/embed.html?bbox=-71.6%2C10.6%2C-68.0%2C12.3&layer=mapnik';
+const surroundings = [
+  { photo: photos.nearbyBeach, sand: false },
+  { photo: photos.falconLandscape, sand: true },
+  { photo: photos.accessRoad, sand: false },
+];
+---
+
+<section class="container section location">
+  <h2 class="t-h2" data-reveal>Falcón, frente al Caribe</h2>
+  <p class="t-lead location__lead" data-reveal>
+    Ciudad Flamingo se ubica en el estado Falcón, al noroeste de Venezuela, sobre la costa caribeña.
+  </p>
+
+  <div class="media location__map" data-reveal>
+    <iframe title="Mapa de Falcón, Venezuela" src={MAP_SRC} loading="lazy"></iframe>
+    <div class="location__card">
+      <p class="location__card-title">
+        <Icon name="map-pin" weight="fill" size={20} class="location__pin" />Ciudad Flamingo
+      </p>
+      <p class="location__card-text">
+        Falcón, Venezuela. Los puntos de interés cercanos se publicarán en breve.
+      </p>
+    </div>
+  </div>
+
+  <div class="location__photos">
+    {
+      surroundings.map(({ photo, sand }) => (
+        <div data-reveal>
+          <Photo
+            photo={photo}
+            ratio="4/3"
+            class:list={['media', { 'media--sand': sand }]}
+            sizes="(min-width: 900px) 33vw, 100vw"
+          />
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .location__lead {
+    max-width: 56ch;
+    margin-top: 20px;
+  }
+
+  .location__map {
+    height: clamp(380px, 50vw, 560px);
+    margin-top: 48px;
+    border: 1px solid var(--color-line);
+  }
+
+  .location__map iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    filter: saturate(0.55) contrast(0.95);
+  }
+
+  .location__card {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    max-width: 340px;
+    padding: 20px 22px;
+    border-radius: var(--radius-lg);
+    background: rgb(252 253 253 / 0.94);
+    box-shadow: var(--shadow-float);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .location__card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.0625rem;
+    font-weight: 700;
+  }
+
+  .location :global(.location__pin) {
+    color: var(--color-teal);
+  }
+
+  .location__card-text {
+    margin-top: 8px;
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  .location__photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .location__card {
+      left: 20px;
+      bottom: 20px;
+    }
+  }
+</style>

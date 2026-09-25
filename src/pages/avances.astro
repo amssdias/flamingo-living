@@ -1,0 +1,129 @@
+---
+import AvanceEntry from '../components/avances/AvanceEntry.astro';
+import Chip from '../components/ui/Chip.astro';
+import Icon from '../components/ui/Icon.astro';
+import Button from '../components/ui/Button.astro';
+import { avances, GENERAL } from '../data/avances';
+import { islas } from '../data/islas';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const ALL = 'all';
+const filters = [{ value: ALL, label: 'Todos' }, ...islas.map((isla) => ({ value: isla.name, label: isla.name }))];
+---
+
+<BaseLayout
+  title="Avances"
+  description="Así avanza Ciudad Flamingo: fotos, vídeos y el detalle mensual de los trabajos en el terreno."
+>
+  <div data-avances data-general={GENERAL}>
+    <section class="container avances-intro">
+      <h1 class="t-h1 avances-intro__title" data-reveal>Así avanza Ciudad Flamingo</h1>
+      <p class="t-lead avances-intro__lead" data-reveal>
+        Cada mes publicamos fotos, vídeos y el detalle de los trabajos realizados en el terreno.
+      </p>
+      <div class="avances-intro__filters" role="group" aria-label="Filtrar por isla" data-reveal>
+        {
+          filters.map((filter) => (
+            <Chip pressed={filter.value === ALL} data-filter={filter.value}>
+              {filter.label}
+            </Chip>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="container avances-feed">
+      {avances.map((avance) => <AvanceEntry avance={avance} />)}
+
+      <div class="avances-empty" data-empty hidden>
+        <Icon name="camera" weight="light" size={40} class="avances-empty__icon" />
+        <h2 class="avances-empty__title">Aún no hay avances de <span data-empty-label></span></h2>
+        <p>Publicaremos las primeras imágenes cuando comiencen los trabajos en esta fase.</p>
+        <Button size="sm" data-filter-reset>Ver todos los avances</Button>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-avances]');
+
+  if (root) {
+    const general = root.dataset.general;
+    const chips = root.querySelectorAll<HTMLButtonElement>('[data-filter]');
+    const reset = root.querySelector<HTMLButtonElement>('[data-filter-reset]');
+    const entries = [...root.querySelectorAll<HTMLElement>('[data-avance]')];
+    const empty = root.querySelector<HTMLElement>('[data-empty]');
+    const emptyLabel = root.querySelector('[data-empty-label]');
+
+    const applyFilter = (value: string) => {
+      const showAll = value === 'all';
+      const hasOwnEntries = showAll || entries.some((entry) => entry.dataset.isla === value);
+
+      chips.forEach((chip) => chip.setAttribute('aria-pressed', String(chip.dataset.filter === value)));
+      entries.forEach((entry) => {
+        const { isla } = entry.dataset;
+        entry.hidden = !hasOwnEntries || !(showAll || isla === value || isla === general);
+      });
+      if (empty) empty.hidden = hasOwnEntries;
+      if (emptyLabel) emptyLabel.textContent = value;
+    };
+
+    chips.forEach((chip) => chip.addEventListener('click', () => applyFilter(chip.dataset.filter ?? 'all')));
+    reset?.addEventListener('click', () => applyFilter('all'));
+  }
+</script>
+
+<style>
+  .avances-intro {
+    padding-top: clamp(56px, 8vw, 112px);
+    padding-bottom: 32px;
+  }
+
+  .avances-intro__title {
+    max-width: 14ch;
+  }
+
+  .avances-intro__lead {
+    max-width: 52ch;
+    margin-top: 22px;
+  }
+
+  .avances-intro__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 40px;
+  }
+
+  .avances-feed {
+    padding-top: 24px;
+    padding-bottom: clamp(88px, 10vw, 140px);
+  }
+
+  .avances-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 64px 32px;
+    border: 1px dashed var(--color-line-strong);
+    border-radius: var(--radius-xl);
+    text-align: center;
+  }
+
+  .avances-empty :global(.avances-empty__icon) {
+    color: var(--color-teal);
+  }
+
+  .avances-empty__title {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  .avances-empty p {
+    max-width: 40ch;
+    line-height: 1.55;
+    color: var(--color-muted);
+  }
+</style>

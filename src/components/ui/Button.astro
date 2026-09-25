@@ -1,0 +1,145 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Variant = 'dark' | 'light' | 'glass' | 'outline' | 'outline-soft' | 'teal' | 'link';
+type Size = 'sm' | 'md' | 'lg';
+
+/** Renders a link when `href` is given, otherwise a button. */
+interface Props extends Omit<HTMLAttributes<'a'>, 'type'> {
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  variant?: Variant;
+  size?: Size;
+}
+
+const { href, type = 'button', variant = 'dark', size = 'md', class: className, ...rest } = Astro.props;
+const classes = ['btn', `btn--${variant}`, variant !== 'link' && `btn--${size}`, className];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes} {...rest}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} class:list={classes} {...(rest as HTMLAttributes<'button'>)}>
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-decoration: none;
+    transition:
+      background-color var(--duration-base) ease,
+      color var(--duration-base) ease,
+      border-color var(--duration-base) ease,
+      transform var(--duration-fast) ease;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .btn--sm {
+    padding: 13px 22px;
+  }
+
+  .btn--md {
+    padding: 16px 26px;
+  }
+
+  .btn--lg {
+    padding: 17px 28px;
+  }
+
+  .btn--dark {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  .btn--dark:hover {
+    background: var(--color-teal);
+    color: var(--color-paper);
+  }
+
+  .btn--light {
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  .btn--light:hover {
+    background: var(--color-teal-soft);
+    color: var(--color-ink);
+  }
+
+  .btn--glass {
+    background: rgb(252 253 253 / 0.12);
+    color: var(--color-paper);
+    border-color: rgb(252 253 253 / 0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .btn--glass:hover {
+    background: rgb(252 253 253 / 0.24);
+    color: var(--color-paper);
+  }
+
+  .btn--outline {
+    background: none;
+    color: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+
+  .btn--outline:hover {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  .btn--outline-soft {
+    background: none;
+    color: var(--color-ink);
+    border-color: var(--color-line-strong);
+  }
+
+  .btn--outline-soft:hover {
+    color: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+
+  .btn--teal {
+    background: var(--color-teal);
+    color: var(--color-paper);
+  }
+
+  .btn--teal:hover {
+    background: var(--color-teal-dark);
+    color: var(--color-paper);
+  }
+
+  .btn--link {
+    gap: 8px;
+    padding: 4px 0;
+    border-radius: 0;
+    border-bottom-color: var(--color-ink);
+    background: none;
+    color: var(--color-ink);
+  }
+
+  .btn--link:hover {
+    color: var(--color-teal);
+    border-bottom-color: var(--color-teal);
+  }
+</style>

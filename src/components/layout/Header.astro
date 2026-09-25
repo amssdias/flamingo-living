@@ -1,0 +1,278 @@
+---
+import { nav } from '../../data/site';
+import { leadHref } from '../../lib/lead';
+import { url } from '../../lib/paths';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import Logo from './Logo.astro';
+
+interface Props {
+  /** The page opens on a dark image hero: the header starts transparent. */
+  overlay?: boolean;
+}
+
+const { overlay = false } = Astro.props;
+const home = url('/');
+const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const isCurrent = (href: string) => (href === home ? path === home : path.startsWith(href));
+const ctaHref = leadHref({ source: 'nav' });
+---
+
+<header
+  class="site-header"
+  data-site-header
+  data-overlay={overlay ? '' : undefined}
+  data-transparent={overlay ? '' : undefined}
+>
+  <div class="site-header__bar">
+    <a href={home} class="site-header__brand" aria-label="Flamingo Living, inicio"><Logo /></a>
+
+    <nav class="site-header__nav" aria-label="Principal">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <Button href={ctaHref} size="sm" class="site-header__cta">Solicitar información</Button>
+
+    <button
+      type="button"
+      class="site-header__toggle"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      aria-label="Abrir menú"
+      data-menu-toggle
+    >
+      <Icon name="list" size={20} class="icon-open" />
+      <Icon name="x" size={20} class="icon-close" />
+    </button>
+  </div>
+
+  <nav id="mobile-menu" class="mobile-menu" aria-label="Menú móvil" hidden data-mobile-menu>
+    <ul>
+      {
+        nav.map((item) => (
+          <li>
+            <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <Button href={ctaHref} class="mobile-menu__cta">Solicitar información</Button>
+  </nav>
+</header>
+
+<script>
+  const SOLID_AFTER_PX = 80;
+  const DESKTOP_QUERY = window.matchMedia('(min-width: 900px)');
+
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  const toggle = header?.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = header?.querySelector<HTMLElement>('[data-mobile-menu]');
+
+  if (header && toggle && menu) {
+    const isOverlay = header.hasAttribute('data-overlay');
+    const isMenuOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+
+    const syncTransparency = () => {
+      const transparent = isOverlay && !isMenuOpen() && window.scrollY <= SOLID_AFTER_PX;
+      header.toggleAttribute('data-transparent', transparent);
+    };
+
+    const setMenu = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+      menu.hidden = !open;
+      syncTransparency();
+    };
+
+    let ticking = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          syncTransparency();
+          ticking = false;
+        });
+      },
+      { passive: true },
+    );
+
+    toggle.addEventListener('click', () => setMenu(!isMenuOpen()));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && isMenuOpen()) {
+        setMenu(false);
+        toggle.focus();
+      }
+    });
+    DESKTOP_QUERY.addEventListener('change', (event) => {
+      if (event.matches) setMenu(false);
+    });
+
+    syncTransparency();
+  }
+</script>
+
+<style>
+  .site-header {
+    --header-ink: var(--color-ink);
+    --header-bg: rgb(252 253 253 / 0.9);
+    --header-line: var(--color-line);
+    --header-toggle-line: var(--color-line-strong);
+
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    color: var(--header-ink);
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--header-line);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition:
+      background-color 0.4s ease,
+      border-color 0.4s ease,
+      color 0.4s ease;
+  }
+
+  .site-header[data-transparent] {
+    --header-ink: var(--color-paper);
+    --header-bg: rgb(252 253 253 / 0);
+    --header-line: rgb(252 253 253 / 0);
+    --header-toggle-line: rgb(252 253 253 / 0.5);
+  }
+
+  .site-header__bar {
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding-inline: var(--gutter);
+  }
+
+  .site-header__brand,
+  .site-header__brand:hover {
+    color: inherit;
+  }
+
+  .site-header__nav {
+    display: none;
+  }
+
+  .site-header__nav ul {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-header__nav a {
+    display: block;
+    padding: 6px 0;
+    border-bottom: 1px solid transparent;
+    color: inherit;
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+
+  .site-header__nav a:hover {
+    border-bottom-color: currentColor;
+  }
+
+  .site-header__nav a[aria-current='page'] {
+    font-weight: 700;
+    border-bottom-color: currentColor;
+  }
+
+  .site-header :global(.site-header__cta) {
+    display: none;
+  }
+
+  .site-header[data-transparent] :global(.site-header__cta) {
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  .site-header[data-transparent] :global(.site-header__cta:hover) {
+    background: var(--color-teal-soft);
+  }
+
+  .site-header__toggle {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--header-toggle-line);
+    border-radius: var(--radius-pill);
+    background: none;
+    color: inherit;
+  }
+
+  .site-header__toggle :global(.icon-close),
+  .site-header__toggle[aria-expanded='true'] :global(.icon-open) {
+    display: none;
+  }
+
+  .site-header__toggle[aria-expanded='true'] :global(.icon-close) {
+    display: block;
+  }
+
+  .mobile-menu {
+    max-height: calc(100dvh - var(--header-height));
+    overflow-y: auto;
+    padding: 12px var(--gutter) 24px;
+    background: var(--color-paper);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .mobile-menu ul {
+    padding: 0;
+    list-style: none;
+  }
+
+  .mobile-menu li a {
+    display: block;
+    padding: 14px 0;
+    color: var(--color-ink);
+    font-size: 1.375rem;
+    font-weight: 500;
+  }
+
+  .mobile-menu li a[aria-current='page'] {
+    color: var(--color-teal);
+  }
+
+  .mobile-menu :global(.mobile-menu__cta) {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  @media (min-width: 900px) {
+    .site-header__nav {
+      display: block;
+    }
+
+    .site-header :global(.site-header__cta) {
+      display: inline-flex;
+    }
+
+    .site-header__toggle,
+    .mobile-menu {
+      display: none;
+    }
+  }
+</style>

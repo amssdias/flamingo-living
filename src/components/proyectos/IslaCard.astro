@@ -1,0 +1,78 @@
+---
+import { islaUrl, type Isla } from '../../data/islas';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import Photo from '../ui/Photo.astro';
+import StatusBadge from '../ui/StatusBadge.astro';
+
+interface Props {
+  isla: Isla;
+}
+
+const { isla } = Astro.props;
+---
+
+<article class="isla-card">
+  <Photo photo={isla.cover} ratio="4/5" class="media" sizes="(min-width: 500px) 400px, 82vw" />
+  <div class="isla-card__head">
+    <h3 class="isla-card__name">
+      <span class="isla-card__numeral" aria-hidden="true">{isla.numeral}</span>
+      <span>{isla.name}</span>
+    </h3>
+    <StatusBadge status={isla.status} class="isla-card__status" />
+  </div>
+  <p class="isla-card__summary">{isla.summary}</p>
+  <Button href={islaUrl(isla)} variant="link" class="isla-card__link" aria-label={`Ver proyecto ${isla.name}`}>
+    Ver proyecto <Icon name="arrow-right" />
+  </Button>
+</article>
+
+<style>
+  .isla-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .isla-card__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 22px;
+  }
+
+  .isla-card__name {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .isla-card__numeral {
+    font-size: 4rem;
+    font-weight: 300;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    color: var(--color-teal);
+  }
+
+  .isla-card :global(.isla-card__status) {
+    font-size: var(--fs-xs);
+    color: var(--color-muted);
+  }
+
+  .isla-card__summary {
+    margin: 14px 0 20px;
+    line-height: 1.55;
+    color: var(--color-muted);
+    text-wrap: pretty;
+  }
+
+  .isla-card :global(.isla-card__link) {
+    align-self: flex-start;
+    margin-top: auto;
+  }
+</style>

@@ -1,0 +1,61 @@
+---
+import Icon from '../ui/Icon.astro';
+
+const highlights = [
+  { icon: 'ruler', label: 'Parcelas desde 230 m²' },
+  { icon: 'map-pin', label: 'Falcón, Venezuela' },
+  { icon: 'trend-up', label: 'Oportunidad de inversión' },
+  { icon: 'waves', label: 'Entorno cercano al mar' },
+];
+---
+
+<section id="descubrir" class="highlights" aria-label="Claves de Ciudad Flamingo">
+  <ul class="container highlights__list">
+    {
+      highlights.map((item) => (
+        <li class="highlights__item" data-reveal>
+          <Icon name={item.icon} weight="light" size={28} class="highlights__icon" />
+          <span>{item.label}</span>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .highlights {
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .highlights__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 20px 28px;
+    padding-block: 36px;
+    list-style: none;
+  }
+
+  .highlights__item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 500;
+  }
+
+  .highlights :global(.highlights__icon) {
+    color: var(--color-teal);
+  }
+
+  @media (max-width: 559px) {
+    .highlights__list {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .highlights__item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.9375rem;
+    }
+  }
+</style>

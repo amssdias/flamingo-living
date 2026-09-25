@@ -1,0 +1,74 @@
+---
+import { photos } from '../../data/photos';
+import { leadHref } from '../../lib/lead';
+import Button from '../ui/Button.astro';
+import Photo from '../ui/Photo.astro';
+---
+
+<section class="final-cta">
+  <div class="final-cta__panel">
+    <Photo photo={photos.caribbeanHorizon} alt="" fill sizes="100vw" />
+    <div class="final-cta__scrim" aria-hidden="true"></div>
+    <div class="final-cta__content">
+      <h2 class="final-cta__title" data-reveal>Tu próxima inversión puede estar junto al Caribe</h2>
+      <p class="final-cta__text" data-reveal>
+        Descubre las parcelas disponibles en Ciudad Flamingo y recibe toda la información del
+        proyecto.
+      </p>
+      <Button href={leadHref({ source: 'home-cta-final' })} variant="light" size="lg" class="final-cta__button">
+        Solicitar información
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final-cta {
+    padding: 0 clamp(12px, 2vw, 24px) clamp(12px, 2vw, 24px);
+  }
+
+  .final-cta__panel {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: min(86dvh, 760px);
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    background: var(--color-night);
+    color: var(--color-on-dark);
+  }
+
+  .final-cta__scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgb(var(--scrim-rgb) / 0.1) 20%, rgb(var(--scrim-rgb) / 0.75) 100%);
+  }
+
+  .final-cta__content {
+    position: relative;
+    max-width: 900px;
+    padding: clamp(28px, 6vw, 80px);
+    padding-bottom: clamp(44px, 6vw, 80px);
+  }
+
+  .final-cta__title {
+    font-size: clamp(2.375rem, 5vw, 4.5rem);
+    font-weight: 500;
+    line-height: 1.04;
+    letter-spacing: var(--tracking-display);
+    text-wrap: balance;
+  }
+
+  .final-cta__text {
+    max-width: 46ch;
+    margin-top: 22px;
+    font-size: var(--fs-body-lg);
+    line-height: 1.55;
+    color: var(--color-on-dark-muted);
+  }
+
+  .final-cta :global(.final-cta__button) {
+    margin-top: 32px;
+  }
+</style>

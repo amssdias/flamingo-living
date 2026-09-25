@@ -1,0 +1,118 @@
+---
+import { legalLinks, nav, site, social } from '../../data/site';
+import Icon from '../ui/Icon.astro';
+import Logo from './Logo.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__grid">
+    <div class="site-footer__brand">
+      <Logo size="lg" />
+      <p>{site.development}<br />{site.region}</p>
+    </div>
+
+    <nav aria-label="Secciones">
+      <ul class="site-footer__links">
+        {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <ul class="site-footer__links">
+      {legalLinks.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+    </ul>
+
+    <ul class="site-footer__social">
+      {
+        social.map((item) => (
+          <li>
+            <a href={item.href} target="_blank" rel="noopener noreferrer" aria-label={item.label}>
+              <Icon name={item.icon} size={20} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="container site-footer__bottom">© {year} {site.name}</div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--color-mist);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .site-footer__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    padding-top: clamp(56px, 7vw, 96px);
+    padding-bottom: 32px;
+  }
+
+  .site-footer__brand p {
+    margin-top: 16px;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+
+  .site-footer ul {
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .site-footer__links a {
+    font-size: 0.9375rem;
+    color: var(--color-ink);
+  }
+
+  .site-footer__links a:hover {
+    color: var(--color-teal);
+  }
+
+  .site-footer__social {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .site-footer__social a {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    color: var(--color-ink);
+  }
+
+  .site-footer__social a:hover {
+    border-color: var(--color-teal);
+    color: var(--color-teal);
+  }
+
+  .site-footer__bottom {
+    padding-top: 20px;
+    padding-bottom: 32px;
+    border-top: 1px solid var(--color-line);
+    font-size: var(--fs-xs);
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 900px) {
+    .site-footer__brand {
+      grid-column: span 2;
+    }
+  }
+</style>
