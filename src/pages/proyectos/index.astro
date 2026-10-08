@@ -1,29 +1,75 @@
 ---
 import IslaRow from '../../components/proyectos/IslaRow.astro';
+import Chip from '../../components/ui/Chip.astro';
 import ImageHero from '../../components/ui/ImageHero.astro';
 import { islas } from '../../data/islas';
 import { photos } from '../../data/photos';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PROFILE_PARAM, profileLabel } from '../../lib/profile';
+
+const ALL = 'all';
+const filters = [{ value: ALL, label: 'Todos' }, ...Object.entries(profileLabel).map(([value, label]) => ({ value, label }))];
 ---
 
 <BaseLayout
   title="Proyectos"
-  description="Las cuatro islas de Ciudad Flamingo: fases con su propio carácter, tamaños de parcela y calendario."
+  description="Los proyectos de Ciudad Flamingo: oportunidades de inversión y parcelas para particulares."
   heroOverlay
 >
   <ImageHero photo={photos.aerialDevelopment} height="medium">
-    <h1 class="t-h1 projects-hero__title">Las islas de Ciudad Flamingo</h1>
-    <p class="projects-hero__lead">Cuatro fases con su propio carácter, tamaños y calendario.</p>
+    <h1 class="t-h1 projects-hero__title">Proyectos en Ciudad Flamingo</h1>
+    <p class="projects-hero__lead">Oportunidades de inversión y parcelas para particulares.</p>
   </ImageHero>
 
-  <section class="container section-sm" aria-label="Listado de islas">
+  <section class="container section-sm" aria-label="Listado de proyectos" data-projects data-param={PROFILE_PARAM}>
+    <div class="projects-filters" role="group" aria-label="Filtrar por perfil">
+      {
+        filters.map((filter) => (
+          <Chip pressed={filter.value === ALL} data-filter={filter.value}>
+            {filter.label}
+          </Chip>
+        ))
+      }
+    </div>
     {islas.map((isla) => <IslaRow isla={isla} />)}
   </section>
 </BaseLayout>
 
+<script>
+  const root = document.querySelector<HTMLElement>('[data-projects]');
+
+  if (root) {
+    const param = root.dataset.param ?? '';
+    const chips = root.querySelectorAll<HTMLButtonElement>('[data-filter]');
+    const rows = root.querySelectorAll<HTMLElement>('[data-profiles]');
+
+    const applyFilter = (value: string) => {
+      const showAll = value === 'all';
+      chips.forEach((chip) => chip.setAttribute('aria-pressed', String(chip.dataset.filter === value)));
+      rows.forEach((row) => {
+        row.hidden = !showAll && !row.dataset.profiles?.split(' ').includes(value);
+      });
+    };
+
+    chips.forEach((chip) =>
+      chip.addEventListener('click', () => {
+        const value = chip.dataset.filter ?? 'all';
+        const next = new URL(window.location.href);
+        if (value === 'all') next.searchParams.delete(param);
+        else next.searchParams.set(param, value);
+        window.history.replaceState(null, '', next);
+        applyFilter(value);
+      }),
+    );
+
+    const initial = new URLSearchParams(window.location.search).get(param);
+    if (initial && [...chips].some((chip) => chip.dataset.filter === initial)) applyFilter(initial);
+  }
+</script>
+
 <style>
   .projects-hero__title {
-    max-width: 12ch;
+    max-width: 16ch;
   }
 
   .projects-hero__lead {
@@ -32,5 +78,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     font-size: var(--fs-body-lg);
     line-height: 1.55;
     color: var(--color-on-dark-muted);
+  }
+
+  .projects-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: clamp(28px, 4vw, 48px);
   }
 </style>

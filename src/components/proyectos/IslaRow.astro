@@ -1,6 +1,7 @@
 ---
-import { islaUrl, sizeRange, type Isla } from '../../data/islas';
+import { islaUrl, type Isla } from '../../data/islas';
 import { leadHref } from '../../lib/lead';
+import { profileLabel } from '../../lib/profile';
 import Button from '../ui/Button.astro';
 import Photo from '../ui/Photo.astro';
 import StatusBadge from '../ui/StatusBadge.astro';
@@ -13,18 +14,32 @@ const { isla } = Astro.props;
 const href = islaUrl(isla);
 ---
 
-<article class="isla-row" data-reveal>
+<article class="isla-row" data-profiles={isla.profiles.join(' ')} data-reveal>
   <div class="isla-row__info">
     <span class="isla-row__numeral" aria-hidden="true">{isla.numeral}</span>
     <div class="isla-row__body">
-      <h2 class="isla-row__name">{isla.name}</h2>
-      <StatusBadge status={isla.status} class="isla-row__status" />
+      <h3 class="isla-row__name">{isla.name}</h3>
+      <div class="isla-row__meta">
+        <StatusBadge status={isla.status} class="isla-row__status" />
+        <ul class="isla-row__tags" aria-label="Dirigido a">
+          {isla.profiles.map((profile) => <li class={`isla-row__tag isla-row__tag--${profile}`}>{profileLabel[profile]}</li>)}
+        </ul>
+      </div>
       <p class="isla-row__summary">{isla.summary}</p>
-      <p class="isla-row__range tabular">Parcelas de {sizeRange(isla)}</p>
+      <dl class="isla-row__facts tabular">
+        {
+          isla.facts.map((fact) => (
+            <div>
+              <dt>{fact.label}</dt>
+              <dd>{fact.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
       <div class="isla-row__actions">
         <Button href={href} size="sm">Ver proyecto</Button>
         <Button href={leadHref({ source: 'proyectos-lista', isla: isla.name })} variant="outline-soft" size="sm">
-          Consultar disponibilidad
+          Solicitar información
         </Button>
       </div>
     </div>
@@ -54,7 +69,7 @@ const href = islaUrl(isla);
 
   .isla-row__numeral {
     min-width: 1.2ch;
-    font-size: clamp(5.5rem, 15vw, 13.75rem);
+    font-size: clamp(5.5rem, 12vw, 11rem);
     font-weight: 300;
     letter-spacing: -0.06em;
     line-height: 0.8;
@@ -67,9 +82,43 @@ const href = islaUrl(isla);
     letter-spacing: 0.02em;
   }
 
-  .isla-row :global(.isla-row__status) {
+  .isla-row__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
     margin-top: 10px;
+  }
+
+  .isla-row :global(.isla-row__status) {
     color: var(--color-muted);
+  }
+
+  .isla-row__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .isla-row__tag {
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .isla-row__tag--inversor {
+    background: var(--color-teal-soft);
+    color: var(--color-teal-dark);
+  }
+
+  .isla-row__tag--particular {
+    background: var(--color-sand);
+    color: var(--color-sand-ink);
   }
 
   .isla-row__summary {
@@ -80,8 +129,21 @@ const href = islaUrl(isla);
     color: var(--color-muted);
   }
 
-  .isla-row__range {
-    margin-top: 14px;
+  .isla-row__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px 24px;
+    max-width: 40ch;
+    margin: 20px 0 0;
+  }
+
+  .isla-row__facts dt {
+    font-size: var(--fs-xs);
+    color: var(--color-muted);
+  }
+
+  .isla-row__facts dd {
+    margin: 2px 0 0;
     font-size: 0.9375rem;
     font-weight: 500;
   }

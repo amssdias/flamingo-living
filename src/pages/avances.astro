@@ -21,7 +21,7 @@ const filters = [{ value: ALL, label: 'Todos' }, ...islas.map((isla) => ({ value
       <p class="t-lead avances-intro__lead" data-reveal>
         Cada mes publicamos fotos, vídeos y el detalle de los trabajos realizados en el terreno.
       </p>
-      <div class="avances-intro__filters" role="group" aria-label="Filtrar por isla" data-reveal>
+      <div class="avances-intro__filters" role="group" aria-label="Filtrar por proyecto" data-reveal>
         {
           filters.map((filter) => (
             <Chip pressed={filter.value === ALL} data-filter={filter.value}>
@@ -38,7 +38,7 @@ const filters = [{ value: ALL, label: 'Todos' }, ...islas.map((isla) => ({ value
       <div class="avances-empty" data-empty hidden>
         <Icon name="camera" weight="light" size={40} class="avances-empty__icon" />
         <h2 class="avances-empty__title">Aún no hay avances de <span data-empty-label></span></h2>
-        <p>Publicaremos las primeras imágenes cuando comiencen los trabajos en esta fase.</p>
+        <p>Publicaremos las primeras imágenes cuando comiencen los trabajos en este proyecto.</p>
         <Button size="sm" data-filter-reset>Ver todos los avances</Button>
       </div>
     </section>

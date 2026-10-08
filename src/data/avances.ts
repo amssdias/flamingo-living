@@ -4,7 +4,7 @@ export interface Avance {
   id: string;
   month: string;
   year: string;
-  /** Isla name, or 'General' for works that affect the whole development. */
+  /** Project name, or 'General' for works that affect the whole development. */
   isla: string;
   phase: string;
   title: string;
@@ -19,17 +19,17 @@ export const avances: Avance[] = [
     id: 'a1',
     month: 'Septiembre',
     year: '2026',
-    isla: 'ISLA I',
+    isla: GENERAL,
     phase: 'Urbanización',
     title: 'Trazado de las calles internas',
-    text: 'Se completó el trazado de las vías internas de ISLA I y comenzó la compactación de la base de las calles.',
+    text: 'Se completó el trazado de las vías internas y comenzó la compactación de la base de las calles.',
     photos: [photos.works2, photos.works1, photos.works3, photos.works5],
   },
   {
     id: 'a2',
     month: 'Agosto',
     year: '2026',
-    isla: 'ISLA I',
+    isla: GENERAL,
     phase: 'Infraestructura',
     title: 'Canalizaciones de agua y electricidad',
     text: 'Instalación de las primeras canalizaciones subterráneas para los servicios de agua y electricidad.',
@@ -39,10 +39,10 @@ export const avances: Avance[] = [
     id: 'a3',
     month: 'Julio',
     year: '2026',
-    isla: 'ISLA II',
+    isla: GENERAL,
     phase: 'Preparación de terrenos',
-    title: 'Limpieza y nivelación de ISLA II',
-    text: 'Retirada de vegetación y nivelación del terreno de ISLA II para el replanteo de parcelas.',
+    title: 'Limpieza y nivelación del terreno',
+    text: 'Retirada de vegetación y nivelación del terreno para el replanteo de parcelas.',
     photos: [photos.works5, photos.works4, photos.works2, photos.works6],
   },
   {

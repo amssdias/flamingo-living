@@ -1,6 +1,6 @@
 ---
 import { photos } from '../../data/photos';
-import { leadHref } from '../../lib/lead';
+import { profileHref } from '../../lib/profile';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
 import ImageHero from '../ui/ImageHero.astro';
@@ -12,11 +12,11 @@ import ImageHero from '../ui/ImageHero.astro';
     Parcelas desde 230 m² en Falcón, Venezuela, para construir, invertir y vivir cerca del mar.
   </p>
   <div class="home-hero__actions">
-    <Button href="#descubrir" variant="light" size="lg">
-      Descubrir Ciudad Flamingo <Icon name="arrow-down" />
+    <Button href={profileHref('inversor')} variant="light" size="lg">
+      Soy inversor <Icon name="arrow-right" />
     </Button>
-    <Button href={leadHref({ source: 'home-hero' })} variant="glass" size="lg">
-      Solicitar información
+    <Button href={profileHref('particular')} variant="light" size="lg">
+      Soy particular <Icon name="arrow-right" />
     </Button>
   </div>
 </ImageHero>

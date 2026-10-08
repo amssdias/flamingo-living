@@ -40,6 +40,15 @@ Copy `.env.example` to `.env` and set the HubSpot portal and form ids. Without t
 
 `site.showAvailability` in `src/data/site.ts` hides plot statuses (sold/reserved) when set to `false`.
 
+## Deployment
+
+Every push to `master` builds and publishes to GitHub Pages via `.github/workflows/deploy.yml`:
+https://amssdias.github.io/flamingo-living/
+
+The site is served under a sub-path, so `astro.config.mjs` sets `base: '/flamingo-living'` and internal links go through `url()` from `src/lib/paths.ts`. With a custom domain, set `site` to that domain and remove `base`.
+
+HubSpot ids for production builds come from the repository variables `PUBLIC_HUBSPOT_PORTAL_ID` and `PUBLIC_HUBSPOT_FORM_ID`.
+
 ## Before launch
 
 - Replace the Unsplash placeholder photos in `src/data/photos.ts` with the project's own photography.

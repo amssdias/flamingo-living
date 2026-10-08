@@ -1,28 +1,14 @@
 ---
-import { islaStatusLabel, sizeRange, type Isla } from '../../data/islas';
-import type { Plot } from '../../data/plots';
-import { site } from '../../data/site';
+import { islaStatusLabel, type Isla, type IslaFact } from '../../data/islas';
 import Icon from '../ui/Icon.astro';
 
 interface Props {
   isla: Isla;
-  plots: Plot[];
 }
 
-const { isla, plots } = Astro.props;
+const { isla } = Astro.props;
 
-const availableLabel = !site.showAvailability
-  ? 'Consultar'
-  : isla.status === 'proximamente'
-    ? islaStatusLabel.proximamente
-    : String(plots.filter((plot) => plot.status === 'disponible').length);
-
-const stats = [
-  { label: 'Tamaños', value: sizeRange(isla) },
-  { label: 'Estado', value: islaStatusLabel[isla.status] },
-  { label: 'Parcelas en la fase', value: String(plots.length) },
-  { label: 'Disponibles', value: availableLabel, highlight: true },
-];
+const stats: IslaFact[] = [{ label: 'Estado', value: islaStatusLabel[isla.status] }, ...isla.facts];
 ---
 
 <section class="container section-sm split overview" style="--split-min: 380px">
@@ -99,6 +85,10 @@ const stats = [
   .overview__stat {
     padding: clamp(18px, 2vw, 24px);
     background: var(--color-paper);
+  }
+
+  .overview__stat:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 
   .overview__stat dt {
