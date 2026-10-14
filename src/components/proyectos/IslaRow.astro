@@ -39,7 +39,7 @@ const href = islaUrl(isla);
       <div class="isla-row__actions">
         <Button href={href} size="sm">Ver proyecto</Button>
         <Button href={leadHref({ source: 'proyectos-lista', isla: isla.name })} variant="outline-soft" size="sm">
-          Solicitar información
+          {isla.cta}
         </Button>
       </div>
     </div>

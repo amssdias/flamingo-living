@@ -26,7 +26,7 @@ const { isla } = Astro.props;
     </div>
     <div class="isla-hero__actions">
       <Button href={leadHref({ source: 'proyecto-hero', isla: isla.name })} variant="light" size="sm">
-        Solicitar información
+        {isla.cta}
       </Button>
     </div>
   </div>
